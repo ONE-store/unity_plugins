@@ -11,7 +11,7 @@ Refer to sample but you have to develop in-app to suit your scenario.
 
 Please refer to developer center and below guide.
 
-    * Developer Center : https://dev.onestore.co.kr/devpoc/reference/view/IAP_v17
+* Developer Center : https://dev.onestore.co.kr/devpoc/reference/view/IAP_v17
 
 If you have opinion, please feedback.
 
