@@ -54,6 +54,8 @@ namespace OneStore
 		public String title;
         public int index;
         public int totalCount;
+        public String priceCurrencyCode;
+
 
         public override string ToString ()
 		{
@@ -62,8 +64,10 @@ namespace OneStore
 			sb.Append ("type: " + type + "\n");
 			sb.Append ("price: " + price + "\n");
 			sb.Append ("title: " + title + "\n");
-            sb.Append("index: " + index + "\n");
-            sb.Append("totalCount: " + totalCount + "\n");
+            sb.Append ("index: " + index + "\n");
+            sb.Append ("totalCount: " + totalCount + "\n");
+            sb.Append ("priceCurrencyCode: " + priceCurrencyCode + "\n");
+
             return sb.ToString ();
 		}
 	}
