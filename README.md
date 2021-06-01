@@ -1,6 +1,6 @@
 # ONE store Unity Plugins
 
-ONE store provide the unit plugins of the SDKs.<br>
+ONE store provide the unity plugins of the SDKs.<br>
 We are getting feedback on improvements.<br><br>
 
 If you have any questions, please contact the ONE store dev center.<br><br>
