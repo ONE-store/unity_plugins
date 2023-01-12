@@ -59,7 +59,7 @@ var purchaseClient = new PurchaseClientImpl(licenseKey);
 purchaseClient.Initialize(callback);
 ```
 
-Refer to the [IAP documentation](https://dev.onestore.co.kr/wiki/ko/doc/04-sdk-37552583.html) for more information.
+Refer to the [IAP documentation](https://dev.onestore.co.kr/wiki/ko/doc/12-unity-sdk-v21-39945904.html) for more information.
 
 ### Licensing module
 
