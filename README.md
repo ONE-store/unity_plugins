@@ -85,3 +85,20 @@ Refer to the [ALC documentation](https://dev.onestore.co.kr/wiki/ko/doc/unity-al
     * Track the connection status of the service and control it through queue management, even if you request the API multiple times in a short time.
 * 2022-11-10
     * Release to samples with the integrated in-app SDK v1.1.0 for the unity.
+    
+# License
+```
+Copyright 2023 One store Co., Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, 
+software distributed under the License is distributed on an "AS IS" BASIS, 
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+See the License for the specific language governing permissions and
+limitations under the License.
+```    
