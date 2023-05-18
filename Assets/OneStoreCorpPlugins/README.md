@@ -2,7 +2,7 @@
 
 ## Overview
 
-ONE store **In-app Integration Library *v1.1.2*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
+ONE store **In-App Integration Library *v1.1.2*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
 
 In order to pay for in-app products, it must be linked with the ONE store service (OSS) app, and the OSS app works with the ONE store payment server to conduct payments for in-app products.
 
@@ -77,16 +77,6 @@ licenseChecker.Initialize(callback);
 ```
 
 Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools/alc/unity-alc-sdk-v2-1) for more information.
-
-## Change Note
-
-* 2023-05-18
-    * Fixed [issues#5](https://github.com/ONE-store/onestore_iap_release/issues/5)
-* 2023-01-10
-    * Exception handling when the purchase data is null when calling consume and acknowlege API.
-    * Track the connection status of the service and control it through queue management, even if you request the API multiple times in a short time.
-* 2022-11-10
-    * Release to samples with the integrated in-app SDK v1.1.0 for the unity.
 
 # License
 

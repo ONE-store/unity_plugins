@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 0d7a7736caae24b019b410af3f6e8425
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: ONE Mobile POP
+  fontNames:
+  - ONE Mobile POP
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

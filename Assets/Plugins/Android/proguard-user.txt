@@ -1,0 +1,4 @@
+-keep class com.gaa.sdk.base.** { *; }
+-keep class com.gaa.sdk.auth.** { *; }
+-keep class com.gaa.sdk.iap.** { *; }
+-keep class com.onestore.extern.licensing.** { *; }
