@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using OneStore.Auth;
-using OneStore.Core;
+using OneStore.Common;
 using OneStore.Purchasing;
-using OneStore.Alc;
 using OneStore.Sample;
 using OneStore.Sample.Common;
 using static ProductItem;

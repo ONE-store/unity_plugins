@@ -1,6 +1,4 @@
-﻿using System.Net.Mime;
-using System.Collections;
-using OneStore.Core;
+﻿using OneStore.Common;
 using OneStore.Alc;
 using OneStore.Sample.Common;
 using UnityEngine;

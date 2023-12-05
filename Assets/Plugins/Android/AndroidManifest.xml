@@ -22,14 +22,6 @@
     </queries>
 
     <application>
-        <!-- 
-            Payment module optional meta-data
-                * full: full screen mode and only supports portrait mode. (default)
-                * popup: dialog mode and supports both portrait and landscape.
-        -->
-        <meta-data android:name="iap:view_option" android:value="popup" />
-
-
         <activity android:name="com.unity3d.player.UnityPlayerActivity"
                   android:theme="@style/UnityThemeSelector"
                   android:exported="true">
@@ -39,5 +31,8 @@
             </intent-filter>
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
         </activity>
+
+        <!-- Options for in-app testing on your global store -->
+        <!-- <meta-data android:name="onestore:dev_option" android:value="global" /> -->
     </application>
 </manifest>

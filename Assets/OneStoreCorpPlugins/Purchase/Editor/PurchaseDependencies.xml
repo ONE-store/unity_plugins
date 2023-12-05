@@ -1,0 +1,8 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://repo.onestore.co.kr/repository/onestore-sdk-public</repository>
+        </repositories>
+        <androidPackage spec="com.onestorecorp.sdk:sdk-iap:21.01.00" />
+    </androidPackages>
+</dependencies>

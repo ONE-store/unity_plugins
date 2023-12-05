@@ -2,7 +2,7 @@
 
 ## Overview
 
-ONE store **In-app Integration Library *v1.1.2*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
+ONE store **In-app Integration Library *v1.2.0*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
 
 In order to pay for in-app products, it must be linked with the ONE store service (OSS) app, and the OSS app works with the ONE store payment server to conduct payments for in-app products.
 
@@ -10,8 +10,8 @@ In order to pay for in-app products, it must be linked with the ONE store servic
 
 These are required libraries for using in-app purchases or check licenses.
 
-* com.onestorecorp.core
-* com.onestorecorp.auth
+* OneStoreCorpPlugins/Common
+* OneStoreCorpPlugins/Authentication
 
 ## Do you use a proguard?
 
@@ -28,6 +28,11 @@ These are required libraries for using in-app purchases or check licenses.
 # Licensing proGuard rules
 -keep class com.onestore.extern.licensing.** { *; }
 ```
+
+## Include external dependencies
+
+The In-app integration Unity Library is distributed with the [EDM4U(External Dependency Manager for Unity)](https://github.com/googlesamples/unity-jar-resolver).
+This library is intended for use by any Unity plugin that requires access to Android-specific libraries. It provides Unity plugins the ability to declare dependencies, which are then automatically resolved and copied into your Unity project.
 
 ## How do I use In-app module?
 
@@ -80,6 +85,11 @@ Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools
 
 ## Change Note
 
+* 2023-12-05
+    * Fixed a bug where the `PurchaseClientImpl.QueryPurchases()` request was not responding when no purchases were found
+    * Change the folder structure
+    * Remove the AAR physical file and apply the gradle dependency.
+    * [EDM4U(External Dependency Manager for Unity)](https://github.com/googlesamples/unity-jar-resolver) to enforce Gradle dependencies is mandatorily distributed with it.
 * 2023-05-18
     * Fixed [issues#5](https://github.com/ONE-store/onestore_iap_release/issues/5)
 * 2023-01-10
