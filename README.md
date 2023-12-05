@@ -90,6 +90,7 @@ Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools
     * Change the folder structure
     * Remove the AAR physical file and apply the gradle dependency.
     * [EDM4U(External Dependency Manager for Unity)](https://github.com/googlesamples/unity-jar-resolver) to enforce Gradle dependencies is mandatorily distributed with it.
+    * `sdk-configuration-xx` is deprecated.
 * 2023-05-18
     * Fixed [issues#5](https://github.com/ONE-store/onestore_iap_release/issues/5)
 * 2023-01-10
