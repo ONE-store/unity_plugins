@@ -85,6 +85,9 @@ Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools
 
 ## Change Note
 
+* 2025-02-25
+    * Enhanced developer option features  
+    * Added `StoreEnvironment.getStoreType()` API
 * 2023-12-05
     * Fixed a bug where the `PurchaseClientImpl.QueryPurchases()` request was not responding when no purchases were found
     * Change the folder structure
