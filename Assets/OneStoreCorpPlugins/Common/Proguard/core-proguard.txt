@@ -22,3 +22,7 @@
 -keep class com.gaa.sdk.base.ResultListener { *; }
 
 -keep class com.gaa.sdk.base.Utils { *; }
+
+-keep class com.gaa.sdk.base.StoreEnvironment ( 
+    public *;
+ )

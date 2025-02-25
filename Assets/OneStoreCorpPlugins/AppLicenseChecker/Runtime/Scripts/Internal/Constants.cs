@@ -4,7 +4,7 @@ namespace OneStore.Alc.Internal
 {
     internal static class Constants
     {   
-        public const string Version = "2.1.0";
+        public const string Version = "2.2.0";
         public static readonly TimeSpan AsyncTimeout = TimeSpan.FromMilliseconds(30000);
 
         public const string AppLicenseChecker = "com.onestore.extern.licensing.AppLicenseCheckerImpl";

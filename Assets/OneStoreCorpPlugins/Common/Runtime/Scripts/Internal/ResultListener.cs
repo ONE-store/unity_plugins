@@ -7,7 +7,7 @@ namespace OneStore.Common.Internal
     {
         public event Action<int, string> OnResponse = delegate { };
 
-        public ResultListener() : base("com.gaa.sdk.base.ResultListener") { }
+        public ResultListener() : base(Constants.ResultListener) { }
 
         void onResponse(int code, string message)
         {

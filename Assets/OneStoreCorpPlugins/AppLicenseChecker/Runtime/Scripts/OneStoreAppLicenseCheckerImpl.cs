@@ -11,15 +11,19 @@ namespace OneStore.Alc
     {
         private AndroidJavaObject _appLicenseChecker;
         private readonly OneStoreLogger _logger;
-
         private readonly string _licenseKey;
-
         private LicenseCheckerListener _listener;
-
         private ILicenseCheckCallback _callback;
 
-        public OneStoreAppLicenseCheckerImpl(string licenseKey) {
-            if (Application.platform != RuntimePlatform.Android) {
+        /// <summary>
+        /// Initializes the ONE store App License Checker with the provided license key.
+        /// Ensures that the platform is Android before proceeding.
+        /// </summary>
+        /// <param name="licenseKey">The license key required for validation.</param>
+        public OneStoreAppLicenseCheckerImpl(string licenseKey)
+        {
+            if (Application.platform != RuntimePlatform.Android)
+            {
                 throw new PlatformNotSupportedException("Operation is not supported on this platform.");
             }
 
@@ -27,8 +31,12 @@ namespace OneStore.Alc
             _licenseKey = licenseKey;
         }
 
-        // ALC 연결 초기화
-        public void Initialize(ILicenseCheckCallback callback) {
+        /// <summary>
+        /// Initializes the App License Checker (ALC) and establishes a connection.
+        /// </summary>
+        /// <param name="callback">Callback interface for handling license check results.</param>
+        public void Initialize(ILicenseCheckCallback callback)
+        {
             _callback = callback;
             _appLicenseChecker = new AndroidJavaObject(Constants.AppLicenseChecker, _licenseKey);
 
@@ -38,6 +46,7 @@ namespace OneStore.Alc
             _listener.Denied += OnDenied;
             _listener.Error += OnError;
 
+            // Sets up the license checker with the Unity activity context and the listener.
             _appLicenseChecker.Call(
                 Constants.AppLicenseCheckerSetupMethod,
                 context,
@@ -45,37 +54,63 @@ namespace OneStore.Alc
             );
         }
 
-        // Cached API 호출
-        // 캐시된 라이센스를 이용할 경우 사용한다.
-        public void QueryLicense() {
+        /// <summary>
+        /// Calls the Cached API to query the license.
+        /// Uses cached license information when available.
+        /// </summary>
+        public void QueryLicense()
+        {
             _logger.Log("do queryLicense");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerQueryLicenseMethod);
         }
 
-        // Non-Cached API 호출
-        // 캐시된 라이센스를 이용하지 않고 사용할 경우 사용한다.
-        public void StrictQueryLicense() {
+        /// <summary>
+        /// Calls the Non-Cached API to query the license.
+        /// Does not use cached license information and forces a fresh validation.
+        /// </summary>
+        public void StrictQueryLicense()
+        {
             _logger.Log("do strictQueryLicense");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerStrickQueryLicenseMethod);
         }
 
-        // ALC 연결 해제
-        public void Destroy() {
+        /// <summary>
+        /// Disconnects and releases resources related to the App License Checker (ALC).
+        /// </summary>
+        public void Destroy()
+        {
             _logger.Log("do destroy");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerDestroy);
         }
-        private void OnGranted(string license, string signature) {
+
+        /// <summary>
+        /// Callback triggered when the license is successfully granted.
+        /// </summary>
+        /// <param name="license">The granted license key.</param>
+        /// <param name="signature">The license signature for verification.</param>
+        private void OnGranted(string license, string signature)
+        {
             _callback.OnGranted(license, signature);
         }
 
-        private void OnDenied() {
+        /// <summary>
+        /// Callback triggered when the license validation is denied.
+        /// </summary>
+        private void OnDenied()
+        {
             _callback.OnDenied();
         }
 
-        private void OnError(int code, string message) {
+        /// <summary>
+        /// Callback triggered when an error occurs during license validation.
+        /// </summary>
+        /// <param name="code">The error code returned.</param>
+        /// <param name="message">A message describing the error.</param>
+        private void OnError(int code, string message)
+        {
             _callback.OnError(code, message);
         }
     }
-    
 }
+
 #endif

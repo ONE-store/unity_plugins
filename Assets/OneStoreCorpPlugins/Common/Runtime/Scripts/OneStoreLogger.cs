@@ -1,4 +1,5 @@
 using UnityEngine;
+using OneStore.Common.Internal;
 
 namespace OneStore.Common
 {
@@ -40,8 +41,8 @@ namespace OneStore.Common
         /// <param name="level">default: 4 (android.util.Log.INFO)</param>
         public static void SetLogLevel(int level)
         {
-            var sdkLogger = new AndroidJavaObject("com.gaa.sdk.base.Logger");
-            sdkLogger.CallStatic("setLogLevel", level);
+            var sdkLogger = new AndroidJavaObject(Constants.SdkLogger);
+            sdkLogger.CallStatic(Constants.SdkLoggerSetLogLevelMethod, level);
         }
     }
 }

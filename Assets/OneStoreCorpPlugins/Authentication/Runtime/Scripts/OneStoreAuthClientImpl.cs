@@ -13,6 +13,11 @@ namespace OneStore.Auth
         private AndroidJavaObject _signInClient;
         private readonly OneStoreLogger _logger;
         private readonly AuthHelper _authHelper;
+
+        /// <summary>
+        /// Initializes the ONE store authentication client.
+        /// Ensures that the platform is Android before proceeding.
+        /// </summary>
         public OneStoreAuthClientImpl()
         {
             if (Application.platform != RuntimePlatform.Android)
@@ -24,16 +29,34 @@ namespace OneStore.Auth
             _authHelper = new AuthHelper(_logger);
         }
 
+        /// <summary>
+        /// Attempts to sign in silently using a stored login token.
+        /// This method can only be called in the background.
+        /// </summary>
+        /// <param name="callback">Callback function to handle the sign-in result.</param>
         public void SilentSignIn(Action<SignInResult> callback)
         {
             SignInInternal(true, callback);
         }
 
+        /// <summary>
+        /// Attempts to sign in using the stored login token first.
+        /// If silent login fails, a login screen is displayed to prompt the user to log in.
+        /// This method must be called in the foreground.
+        /// </summary>
+        /// <param name="callback">Callback function to handle the sign-in result.</param>
         public void LaunchSignInFlow(Action<SignInResult> callback)
         {
             SignInInternal(false, callback);
         }
 
+        /// <summary>
+        /// Handles the sign-in process.
+        /// If `isSilent` is true, a silent login is attempted.
+        /// If `isSilent` is false or the silent login fails, a login screen is displayed.
+        /// </summary>
+        /// <param name="isSilent">Determines whether the sign-in should be silent.</param>
+        /// <param name="callback">Callback function to return the sign-in result.</param>
         private void SignInInternal(bool isSilent, Action<SignInResult> callback)
         {
             var context = JniHelper.GetApplicationContext();
@@ -95,6 +118,10 @@ namespace OneStore.Auth
         //     );
         // }
 
+        /// <summary>
+        /// Runs the provided action on the main thread.
+        /// </summary>
+        /// <param name="action">The action to execute on the main thread.</param>
         private void RunOnMainThread(Action action)
         {
             OneStoreDispatcher.RunOnMainThread(() => action());
