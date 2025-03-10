@@ -3,6 +3,6 @@
         <repositories>
             <repository>https://repo.onestore.net/repository/onestore-sdk-public</repository>
         </repositories>
-        <androidPackage spec="com.onestorecorp.sdk:sdk-licensing:2.2.0" />
+        <androidPackage spec="com.onestorecorp.sdk:sdk-licensing:2.2.1" />
     </androidPackages>
 </dependencies>

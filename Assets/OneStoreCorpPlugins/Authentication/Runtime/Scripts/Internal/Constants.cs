@@ -4,7 +4,7 @@ namespace OneStore.Auth.Internal
 {
     internal static class Constants
     {
-        public const string Version = "1.2.0";
+        public const string Version = "1.2.1";
 
         public static readonly TimeSpan AsyncTimeout = TimeSpan.FromMilliseconds(30000);
 

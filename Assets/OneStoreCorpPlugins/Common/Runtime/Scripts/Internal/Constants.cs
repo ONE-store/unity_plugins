@@ -4,7 +4,7 @@ namespace OneStore.Common.Internal
 {
     internal static class Constants
     {
-        public const string Version = "1.2.0";
+        public const string Version = "1.2.1";
 
         public const string SdkLogger = "com.gaa.sdk.base.Logger";
         public const string SdkLoggerSetLogLevelMethod = "setLogLevel";

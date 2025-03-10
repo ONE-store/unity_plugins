@@ -2,7 +2,7 @@
 
 ## Overview
 
-ONE store **In-app Integration Library *v1.3.0*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
+ONE store **In-app Integration Library *v1.3.1*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
 
 In order to pay for in-app products, it must be linked with the ONE store service (OSS) app, and the OSS app works with the ONE store payment server to conduct payments for in-app products.
 
@@ -85,6 +85,8 @@ Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools
 
 ## Change Note
 
+* 2025-03-10
+    * Fix exception handling bug when using `getApplicationEnabledSetting()`
 * 2025-02-25
     * Enhanced developer option features  
     * Added `StoreEnvironment.getStoreType()` API
