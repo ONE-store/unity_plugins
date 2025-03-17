@@ -179,6 +179,12 @@ public class MainUIManager : MonoBehaviour, IPurchaseCallback
         /// </summary>
         OneStoreLogger.SetLogLevel(2);
 
+        /// <summary>
+        /// The StoreEnvironment class is responsible for determining the type of store where the app is installed.
+        /// </summary>
+        var storeType = StoreEnvironment.GetStoreType();
+        Log(LogType.Log, "StoreType: {0}", storeType);
+
         new OneStoreAuthClientImpl().LaunchSignInFlow((signInResult) => {
             if (signInResult.IsSuccessful())
             {
