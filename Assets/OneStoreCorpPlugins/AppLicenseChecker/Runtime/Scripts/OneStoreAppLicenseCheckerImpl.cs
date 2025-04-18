@@ -4,13 +4,13 @@ using System;
 using OneStore.Common;
 using OneStore.Alc.Internal;
 using UnityEngine;
+using Logger = OneStore.Common.OneStoreLogger;
 
 namespace OneStore.Alc
 {
     public class OneStoreAppLicenseCheckerImpl
     {
         private AndroidJavaObject _appLicenseChecker;
-        private readonly OneStoreLogger _logger;
         private readonly string _licenseKey;
         private LicenseCheckerListener _listener;
         private ILicenseCheckCallback _callback;
@@ -27,7 +27,6 @@ namespace OneStore.Alc
                 throw new PlatformNotSupportedException("Operation is not supported on this platform.");
             }
 
-            _logger = new OneStoreLogger();
             _licenseKey = licenseKey;
         }
 
@@ -60,7 +59,7 @@ namespace OneStore.Alc
         /// </summary>
         public void QueryLicense()
         {
-            _logger.Log("do queryLicense");
+            Logger.Log("do queryLicense");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerQueryLicenseMethod);
         }
 
@@ -70,7 +69,7 @@ namespace OneStore.Alc
         /// </summary>
         public void StrictQueryLicense()
         {
-            _logger.Log("do strictQueryLicense");
+            Logger.Log("do strictQueryLicense");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerStrickQueryLicenseMethod);
         }
 
@@ -79,7 +78,7 @@ namespace OneStore.Alc
         /// </summary>
         public void Destroy()
         {
-            _logger.Log("do destroy");
+            Logger.Log("do destroy");
             _appLicenseChecker.Call(Constants.AppLicenseCheckerDestroy);
         }
 

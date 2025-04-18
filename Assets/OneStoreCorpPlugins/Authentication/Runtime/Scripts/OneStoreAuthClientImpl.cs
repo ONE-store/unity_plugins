@@ -5,14 +5,13 @@ using System;
 using OneStore.Common;
 using OneStore.Auth.Internal;
 using UnityEngine;
+using Logger = OneStore.Common.OneStoreLogger;
 
 namespace OneStore.Auth
 {
     public class OneStoreAuthClientImpl
     {
         private AndroidJavaObject _signInClient;
-        private readonly OneStoreLogger _logger;
-        private readonly AuthHelper _authHelper;
 
         /// <summary>
         /// Initializes the ONE store authentication client.
@@ -24,9 +23,6 @@ namespace OneStore.Auth
             {
                 throw new PlatformNotSupportedException("Operation is not supported on this platform.");
             }
-
-            _logger = new OneStoreLogger();
-            _authHelper = new AuthHelper(_logger);
         }
 
         /// <summary>
@@ -65,11 +61,11 @@ namespace OneStore.Auth
 
             var authListener = new OnAuthListener();
             authListener.OnAuthResponse += (javaSignInResult) => {
-                var signInResult = _authHelper.ParseJavaSignInpResult(javaSignInResult);
-                var responseCode = _authHelper.GetResponseCodeFromSignInResult(signInResult);
+                var signInResult = AuthHelper.ParseJavaSignInpResult(javaSignInResult);
+                var responseCode = AuthHelper.GetResponseCodeFromSignInResult(signInResult);
                 if (responseCode != ResponseCode.RESULT_OK)
                 {
-                    _logger.Error("Failed to signIn with error code {0} and message: {1}", signInResult.Code, signInResult.Message);
+                    Logger.Error("Failed to signIn with error code {0} and message: {1}", signInResult.Code, signInResult.Message);
                 }
 
                 RunOnMainThread(() => callback?.Invoke(signInResult));

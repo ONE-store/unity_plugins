@@ -2,7 +2,7 @@ using UnityEngine;
 #if UNITY_ANDROID || !UNITY_EDITOR
 namespace OneStore.Common
 {
-    public class JniHelper
+    public static class JniHelper
     {
          /// <summary>
         /// Returns the Android activity context of the Unity app.

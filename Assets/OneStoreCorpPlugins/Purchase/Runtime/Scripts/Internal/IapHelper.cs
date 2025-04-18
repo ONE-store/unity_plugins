@@ -3,25 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using OneStore.Common;
+using Logger = OneStore.Common.OneStoreLogger;
 
 namespace OneStore.Purchasing.Internal
 {
     /// <summary>
     /// A collection of utils methods to process AndroidJavaObject returned by Gaa Purchasing Library.
     /// </summary>
-    public class IapHelper
+    public static class IapHelper
     {
-        private readonly OneStoreLogger _logger;
-        public IapHelper(OneStoreLogger logger)
-        {
-            _logger = logger;
-        }
 
         /// <summary>
         /// Parses the Iap results returned by Gaa Purchasing Client.
         /// </summary>
         /// <returns> The IapResult that indicates the outcome of the Java IapResult. </returns>
-        public IapResult ParseJavaIapResult(AndroidJavaObject javaIapResult)
+        public static IapResult ParseJavaIapResult(AndroidJavaObject javaIapResult)
         {
             var code = javaIapResult.Call<int>("getResponseCode");
             var message = javaIapResult.Call<string>("getMessage");
@@ -33,7 +29,7 @@ namespace OneStore.Purchasing.Internal
         /// Parses the IapResults returned by Gaa Purchasing Client.
         /// </summary>
         /// <returns>Returns the code value of the IapResult in ResponseCode.</returns>
-        public ResponseCode GetResponseCodeFromIapResult(IapResult iapResult)
+        public static ResponseCode GetResponseCodeFromIapResult(IapResult iapResult)
         {
             var resultResponseCode = ResponseCode.RESULT_ERROR;
             try
@@ -42,11 +38,11 @@ namespace OneStore.Purchasing.Internal
             }
             catch (ArgumentNullException)
             {
-                _logger.Error("Missing response code, return ResponseCode.RESULT_ERROR.");
+                Logger.Error("Missing response code, return ResponseCode.RESULT_ERROR.");
             }
             catch (ArgumentException)
             {
-                _logger.Error("Unknown response code {0}, return ResponseCode.RESULT_ERROR.", iapResult.Code);
+                Logger.Error("Unknown response code {0}, return ResponseCode.RESULT_ERROR.", iapResult.Code);
             }
             return resultResponseCode;
         }
@@ -55,12 +51,12 @@ namespace OneStore.Purchasing.Internal
         /// Parses the ProductDetail list results returned by the Gaa Purchasing Library.
         /// </summary>
         /// <returns>An IEnumerable of <cref="SkuDetails"/>. The IEnumerable could be empty.</returns>
-        public IEnumerable<ProductDetail> ParseProductDetailsResult(AndroidJavaObject javaIapResult, AndroidJavaObject productDetailsList)
+        public static IEnumerable<ProductDetail> ParseProductDetailsResult(AndroidJavaObject javaIapResult, AndroidJavaObject productDetailsList)
         {
             var iapResult = ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Warning("Failed to retrieve products information! Error code {0}, message: {1}.",
+                Logger.Warning("Failed to retrieve products information! Error code {0}, message: {1}.",
                     iapResult.Code, iapResult.Message);
                 return Enumerable.Empty<ProductDetail>();
             }
@@ -71,6 +67,8 @@ namespace OneStore.Purchasing.Internal
             {
                 var javaProductDetail = productDetailsList.Call<AndroidJavaObject>("get", i);
                 var originalJson = javaProductDetail.Call<string>(Constants.ProductDetailGetOriginalJson);
+                Logger.Verbose("ParseProductDetailsResult: originalJson: {0}", originalJson);
+
                 ProductDetail productDetail;
                 if (ProductDetail.FromJson(originalJson, out productDetail))
                 {
@@ -78,7 +76,7 @@ namespace OneStore.Purchasing.Internal
                 }
                 else
                 {
-                    _logger.Warning("Failed to parse productDetails {0} ", originalJson);
+                    Logger.Warning("Failed to parse productDetails {0} ", originalJson);
                 }
             }
 
@@ -89,7 +87,7 @@ namespace OneStore.Purchasing.Internal
         /// Parses the Java list of purchaseData list returned by the Gaa Purchasing Library.
         /// </summary>
         /// <returns>An IEnumerable of <cref="PurchaseData"/>. The IEnumerable could be empty.</returns>
-        public IEnumerable<PurchaseData> ParseJavaPurchasesList(AndroidJavaObject javaPurchasesList)
+        public static IEnumerable<PurchaseData> ParseJavaPurchasesList(AndroidJavaObject javaPurchasesList)
         {
             var parsedPurchasesList = new List<PurchaseData>();
             var size = javaPurchasesList.Call<int>("size");
@@ -98,6 +96,8 @@ namespace OneStore.Purchasing.Internal
                 var javaPurchase = javaPurchasesList.Call<AndroidJavaObject>("get", i);
                 var originalJson = javaPurchase.Call<string>(Constants.PurchaseDataGetOriginalJsonMethod);
                 var signature = javaPurchase.Call<string>(Constants.PurchaseDataGetSignatureMethod);
+                Logger.Verbose("ParseJavaPurchasesList: originalJson: {0}, signature: {1}", originalJson, signature);
+                
                 PurchaseData purchaseData;
                 if (PurchaseData.FromJson(originalJson, signature, out purchaseData))
                 {
@@ -105,23 +105,22 @@ namespace OneStore.Purchasing.Internal
                 }
                 else
                 {
-                    _logger.Warning("Failed to parse purchase {0} ", originalJson);
+                    Logger.Warning("Failed to parse purchase {0} ", originalJson);
                 }
             }
 
             return parsedPurchasesList;
         }
 
-        public PurchaseData ParseJavaPurchaseData(AndroidJavaObject javaPurchaseData)
+        public static PurchaseData ParseJavaPurchaseData(AndroidJavaObject javaPurchaseData)
         {
-            var originalJson = javaPurchaseData.Call<string>("getOriginalJson");
-            var signature = javaPurchaseData.Call<string>("getSignature");
-            PurchaseData purchaseData;
-            if (PurchaseData.FromJson(originalJson, signature, out purchaseData))
+            var originalJson = javaPurchaseData.Call<string>(Constants.PurchaseDataGetOriginalJsonMethod);
+            var signature = javaPurchaseData.Call<string>(Constants.PurchaseDataGetSignatureMethod);
+            if (PurchaseData.FromJson(originalJson, signature, out PurchaseData purchaseData))
             {
                 return purchaseData;
             }
-            
+
             return null;
         }
 
@@ -146,7 +145,7 @@ namespace OneStore.Purchasing.Internal
         //     var responseCode = GetResponseCodeFromIapResult(iapResult);
         //     if (responseCode != ResponseCode.RESULT_OK)
         //     {
-        //         _logger.Error("Failed to retrieve purchases information! Error code {0}, message: {1}.",
+        //         Logger.Error("Failed to retrieve purchases information! Error code {0}, message: {1}.",
         //             iapResult.Code, iapResult.Message);
         //         return Enumerable.Empty<PurchaseData>();
         //     }

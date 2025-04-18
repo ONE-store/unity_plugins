@@ -6,15 +6,14 @@ apply plugin: 'com.android.library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.onestorecorp.sdk:sdk-iap:21.02.00' // Assets/OneStoreCorpPlugins/Purchase/Editor/PurchaseDependencies.xml:6
-    implementation 'com.onestorecorp.sdk:sdk-licensing:2.2.0' // Assets/OneStoreCorpPlugins/AppLicenseChecker/Editor/AppLicenseCheckerDependencies.xml:6
+    implementation 'com.onestorecorp.sdk:sdk-iap:21.02.01' // Assets/OneStoreCorpPlugins/Purchase/Editor/PurchaseDependencies.xml:6
+    implementation 'com.onestorecorp.sdk:sdk-licensing:2.2.1' // Assets/OneStoreCorpPlugins/AppLicenseChecker/Editor/AppLicenseCheckerDependencies.xml:6
 // Android Resolver Dependencies End
 **DEPS**}
 
 // Android Resolver Exclusions Start
 android {
   packagingOptions {
-      exclude ('/lib/arm64-v8a/*' + '*')
       exclude ('/lib/armeabi/*' + '*')
       exclude ('/lib/mips/*' + '*')
       exclude ('/lib/mips64/*' + '*')

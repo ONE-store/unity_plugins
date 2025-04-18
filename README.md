@@ -2,7 +2,7 @@
 
 ## Overview
 
-ONE store **In-app Integration Library *v1.3.1*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
+ONE store **In-app Integration Library *v1.3.2*** is a service that sells and charges products implemented in Android apps to users using ONE store's authentication and payment system, and settles them with the developers.
 
 In order to pay for in-app products, it must be linked with the ONE store service (OSS) app, and the OSS app works with the ONE store payment server to conduct payments for in-app products.
 
@@ -64,7 +64,7 @@ var purchaseClient = new PurchaseClientImpl(licenseKey);
 purchaseClient.Initialize(callback);
 ```
 
-Refer to the [IAP documentation](https://onestore-dev.gitbook.io/dev/tools/tools/v21/12.-unity-sdk-v21#id-12.unity-sdkv21-14) for more information.
+Refer to the [IAP documentation](https://onestore-dev.gitbook.io/dev/eng/tools/tools/v21/unity) for more information.
 
 ### Licensing module
 
@@ -81,10 +81,13 @@ var licenseChecker = new OneStoreAppLicenseCheckerImpl(licenseKey);
 licenseChecker.Initialize(callback);
 ```
 
-Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/tools/tools/alc/unity-alc-sdk-v2-1) for more information.
+Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/eng/tools/alc/using-alc-sdk-v2-in-unity) for more information.
 
 ## Change Note
 
+* 2025-04-18
+    * Fixed a bug where `signature` was missing from `consume()` response in certain cases.
+    * Minor typo fixes and code stabilization.
 * 2025-03-10
     * Fix exception handling bug when using `getApplicationEnabledSetting()`
 * 2025-02-25

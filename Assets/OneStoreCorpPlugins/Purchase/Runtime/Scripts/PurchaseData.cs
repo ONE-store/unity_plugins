@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using OneStore.Purchasing.Internal;
+using Logger = OneStore.Common.OneStoreLogger;
 
 namespace OneStore.Purchasing
 {
@@ -29,6 +30,7 @@ namespace OneStore.Purchasing
 
         public long PurchaseTime { get { return _purchaseMeta.purchaseTime; } }
 
+        [Obsolete]
         public string PurchaseId { get { return _purchaseMeta.purchaseId; } }
 
         public string PurchaseToken { get { return _purchaseMeta.purchaseToken; } }
@@ -61,9 +63,11 @@ namespace OneStore.Purchasing
                 purchaseData = new PurchaseData(purchaseMeta, jsonPurchaseData, signature);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error is logged at the caller side.
+                Logger.Error("[PurchaseData]: Failed to parse purchase data: {0}", jsonPurchaseData);
+                Logger.Exception(ex);
+            
                 purchaseData = null;
                 return false;
             }
@@ -71,7 +75,12 @@ namespace OneStore.Purchasing
 
         public AndroidJavaObject ToJava()
         {
-            return new AndroidJavaObject(Constants.PurchaseDataClass, _purchaseReceipt.json);
+            return new AndroidJavaObject(
+                Constants.PurchaseDataClass,
+                _purchaseReceipt.json,
+                _purchaseReceipt.signature,
+                null
+            );
         }
 
         [Serializable]
@@ -96,12 +105,12 @@ namespace OneStore.Purchasing
         private class PurchaseReceipt
         {
             public string json;
-            public string sigature;
+            public string signature;
 
             public PurchaseReceipt(string jsonPurchaseData, string signature)
             {
                 json = jsonPurchaseData;
-                this.sigature = signature;
+                this.signature = signature;
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using OneStore.Purchasing.Internal;
 using OneStore.Common;
+using Logger = OneStore.Common.OneStoreLogger;
 using UnityEngine;
 
 namespace OneStore.Purchasing
@@ -23,8 +24,6 @@ namespace OneStore.Purchasing
         private PurchasesUpdatedListener _purchaseUpdatedListener;
 
         private readonly OneStorePurchasingInventory _inventory;
-        private readonly OneStoreLogger _logger;
-        private readonly IapHelper _iapHelper;
 
         private volatile string _productInPurchaseFlow;
 
@@ -81,8 +80,6 @@ namespace OneStore.Purchasing
         /// <remarks>
         /// - Checks if the application is running on an Android platform; otherwise, throws a `PlatformNotSupportedException`.  
         /// - Initializes `_inventory` as an instance of `OneStorePurchasingInventory` to manage purchase data.  
-        /// - Initializes `_logger` as an instance of `OneStoreLogger` for logging purposes.  
-        /// - Initializes `_iapHelper` with `_logger` to assist in IAP-related operations.  
         /// - Stores the provided `licenseKey` in `_licenseKey` for later use.  
         /// </remarks>
         public PurchaseClientImpl(string licenseKey)
@@ -93,8 +90,6 @@ namespace OneStore.Purchasing
             }
 
             _inventory = new OneStorePurchasingInventory();
-            _logger = new OneStoreLogger();
-            _iapHelper = new IapHelper(_logger);
             _licenseKey = licenseKey;
         }
 
@@ -127,7 +122,7 @@ namespace OneStore.Purchasing
             );
 
             StartConnection(()=> {
-                _logger.Log("Initialize: Successfully connected to the service.");
+                Logger.Log("Initialize: Successfully connected to the service.");
                 GetStoreCode();
             });
         }
@@ -150,7 +145,7 @@ namespace OneStore.Purchasing
         {
             if (_connectionStatus == ConnectionStatus.CONNECTING) {
                 _requestQueue.Enqueue(action);
-                _logger.Log("Client is already in the process of connecting to service.");
+                Logger.Log("Client is already in the process of connecting to service.");
                 return;
             }
 
@@ -159,14 +154,14 @@ namespace OneStore.Purchasing
             var purchaseClientStateListener = new PurchaseClientStateListener();
             purchaseClientStateListener.OnServiceDisconnected += () =>
             {
-                _logger.Warning("Client is disconnected from the service.");
+                Logger.Warning("Client is disconnected from the service.");
                 _productInPurchaseFlow = null;
                 _connectionStatus = ConnectionStatus.DISCONNECTED;
             };
 
             purchaseClientStateListener.OnSetupFinished += (javaIapResult) =>
             {
-                var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+                var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
                 if (iapResult.IsSuccessful())
                 {
                     _connectionStatus = ConnectionStatus.CONNECTED;
@@ -178,7 +173,7 @@ namespace OneStore.Purchasing
                 }
                 else
                 {
-                    _logger.Error("Failed to connect to service with error code '{0}' and message: '{1}'.",
+                    Logger.Error("Failed to connect to service with error code '{0}' and message: '{1}'.",
                         iapResult.Code, iapResult.Message);
 
                     _requestQueue.Clear();
@@ -295,7 +290,7 @@ namespace OneStore.Purchasing
             if (ProductType.ALL == type)
             {
                 var message = "ProductType.ALL is not supported. This is supported only by the QueryProductDetails.";
-                _logger.Error(message);
+                Logger.Error(message);
                 RunOnMainThread(() => _callback.OnPurchaseFailed(new IapResult((int) ResponseCode.ERROR_ILLEGAL_ARGUMENT, message)));
                 return;
             }
@@ -339,7 +334,7 @@ namespace OneStore.Purchasing
             if (_productInPurchaseFlow != null)
             {
                 var message = string.Format("A purchase for {0} is already in progress.", _productInPurchaseFlow);
-                _logger.Error(message);
+                Logger.Error(message);
                 RunOnMainThread(() => _callback.OnPurchaseFailed(new IapResult((int) ResponseCode.RESULT_ERROR, message)));
                 return;
             }
@@ -386,7 +381,7 @@ namespace OneStore.Purchasing
             if (_productInPurchaseFlow != null)
             {
                 var message = string.Format("The update subscription for {0} is already in progress.", _productInPurchaseFlow);
-                _logger.Error(message);
+                Logger.Error(message);
                 RunOnMainThread(() => _callback.OnPurchaseFailed(new IapResult((int) ResponseCode.RESULT_ERROR, message)));
                 return;
             }
@@ -502,7 +497,7 @@ namespace OneStore.Purchasing
             else if (ProductType.ALL == type)
             {
                 var message = "ProductType.ALL is not supported. This is supported only by the QueryProductDetails.";
-                _logger.Error(message);
+                Logger.Error(message);
                 RunOnMainThread(() => _callback.OnAcknowledgeFailed(new IapResult((int) ResponseCode.ERROR_ILLEGAL_ARGUMENT, message)));
                 return;
             }
@@ -586,7 +581,7 @@ namespace OneStore.Purchasing
         /// - The first API call attempts to connect to the ONE store service.
         /// - If `RESULT_NEED_UPDATE` occurs, you must call this method to update or install the service.
         /// - The function creates an `IapResultListener` to handle the response.
-        /// - The result from the Java IAP service is parsed using `_iapHelper.ParseJavaIapResult()`.
+        /// - The result from the Java IAP service is parsed using `IapHelper.ParseJavaIapResult()`.
         /// - If the update or installation is successful, the provided callback is invoked with the `IapResult`.
         /// - The process is executed via `_purchaseClient.Call()`, which triggers the update or installation flow.
         /// </remarks>
@@ -595,7 +590,7 @@ namespace OneStore.Purchasing
             var iapResultListener = new IapResultListener();
             iapResultListener.OnResponse += (javaIapResult) =>
             {
-                var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+                var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
                 HandleErrorCode(iapResult, () => {
                     RunOnMainThread(() => callback?.Invoke(iapResult));
                 });
@@ -674,7 +669,7 @@ namespace OneStore.Purchasing
                 return true;
             }
             var message = string.Format("Purchasing service unavailable. ConnectionStatus: {0}", _connectionStatus.ToString());
-            _logger.Warning(message);
+            Logger.Warning(message);
             return false;
         }
 
@@ -685,7 +680,7 @@ namespace OneStore.Purchasing
         /// <param name="javaIapResult">The result of the IAP request from the ONE store SDK.</param>
         /// <param name="javaProductDetailList">The list of product details retrieved from the query.</param>
         /// <remarks>
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the query fails, logs a warning with the error details and updates the query status as `Failed`.  
         /// - Handles error cases by invoking `HandleErrorCode(iapResult)`, triggering the `OnProductDetailsFailed` callback.  
         /// - If successful, parses the product details list and updates the inventory using `_inventory.UpdateProductDetailInventory()`.  
@@ -693,10 +688,10 @@ namespace OneStore.Purchasing
         /// </remarks>
         private void ProcessProductDetailsResult(ProductType type, AndroidJavaObject javaIapResult, AndroidJavaObject javaProductDetailList)
         {
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Warning("Retrieve product failed with error code '{0}' and message: '{1}'",
+                Logger.Warning("Retrieve product failed with error code '{0}' and message: '{1}'",
                     iapResult.Code, iapResult.Message);
 
                 _queryProductDetailsCallStatus[type] = AsyncRequestStatus.Failed;
@@ -707,7 +702,7 @@ namespace OneStore.Purchasing
                 return;
             }
             
-            var productDetailList = _iapHelper.ParseProductDetailsResult(javaIapResult, javaProductDetailList);
+            var productDetailList = IapHelper.ParseProductDetailsResult(javaIapResult, javaProductDetailList);
             _inventory.UpdateProductDetailInventory(productDetailList);
             _queryProductDetailsCallStatus[type] = AsyncRequestStatus.Succeed;
             RunOnMainThread(() => _callback.OnProductDetailsSucceeded(productDetailList.ToList()));
@@ -720,19 +715,19 @@ namespace OneStore.Purchasing
         /// <param name="javaPurchasesList">The list of purchases retrieved from the query.</param>
         /// <remarks>
         /// - Resets `_productInPurchaseFlow` to `null` after the purchase process completes.  
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the purchase fails, logs a warning with the error details and invokes `OnPurchaseFailed` callback.  
-        /// - If the purchase is successful, retrieves the purchase list using `_iapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
+        /// - If the purchase is successful, retrieves the purchase list using `IapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
         /// - If any purchases exist, updates the inventory using `_inventory.UpdatePurchaseInventory()`.  
         /// - Invokes the `OnPurchaseSucceeded` callback with the retrieved purchase list.  
         /// </remarks>
         private void ProcessPurchaseUpdatedResult(AndroidJavaObject javaIapResult, AndroidJavaObject javaPurchasesList)
         {
             _productInPurchaseFlow = null;
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Warning("Purchase failed with error code '{0}' and message: '{1}'",
+                Logger.Warning("Purchase failed with error code '{0}' and message: '{1}'",
                     iapResult.Code, iapResult.Message);
 
                 HandleErrorCode(iapResult, () => {
@@ -741,7 +736,7 @@ namespace OneStore.Purchasing
                 return;
             }
 
-            var purchasesList = _iapHelper.ParseJavaPurchasesList(javaPurchasesList);
+            var purchasesList = IapHelper.ParseJavaPurchasesList(javaPurchasesList);
             if (purchasesList.Any())
             {
                 _inventory.UpdatePurchaseInventory(purchasesList);
@@ -757,20 +752,20 @@ namespace OneStore.Purchasing
         /// <param name="javaPurchasesList">The list of purchases retrieved from the query.</param>
         /// <remarks>
         /// - Resets `_productInPurchaseFlow` to `null` after processing the query.  
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the query fails, logs a warning, sets the query status to `Failed`, and triggers the `OnPurchaseFailed` callback.  
         /// - If the query is successful, updates `_queryPurchasesCallStatus[type]` to `Succeed`.  
-        /// - Retrieves the purchase list using `_iapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
+        /// - Retrieves the purchase list using `IapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
         /// - Updates the inventory with the retrieved purchases using `_inventory.UpdatePurchaseInventory()`.  
         /// - Invokes the `OnPurchaseSucceeded` callback with the purchase list.  
         /// </remarks>
         private void ProcessQueryPurchasesResult(ProductType type, AndroidJavaObject javaIapResult, AndroidJavaObject javaPurchasesList)
         {
             _productInPurchaseFlow = null;
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Warning("Purchase failed with error code '{0}' and message: '{1}'",
+                Logger.Warning("Purchase failed with error code '{0}' and message: '{1}'",
                     iapResult.Code, iapResult.Message);
 
                 _queryPurchasesCallStatus[type] = AsyncRequestStatus.Failed;
@@ -782,7 +777,7 @@ namespace OneStore.Purchasing
             }
 
             _queryPurchasesCallStatus[type] = AsyncRequestStatus.Succeed;
-            var purchasesList = _iapHelper.ParseJavaPurchasesList(javaPurchasesList);
+            var purchasesList = IapHelper.ParseJavaPurchasesList(javaPurchasesList);
             _inventory.UpdatePurchaseInventory(purchasesList);
             RunOnMainThread(() => _callback.OnPurchaseSucceeded(purchasesList.ToList()));
         }
@@ -793,18 +788,18 @@ namespace OneStore.Purchasing
         /// <param name="javaIapResult">The result of the IAP request from the ONE store SDK.</param>
         /// <param name="javaPurchaseData">The purchase data of the consumed product.</param>
         /// <remarks>
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the consumption request fails, logs an error, handles the error code, and triggers the `OnConsumeFailed` callback.  
-        /// - If successful, parses the consumed purchase data using `_iapHelper.ParseJavaPurchaseData(javaPurchaseData)`.  
+        /// - If successful, parses the consumed purchase data using `IapHelper.ParseJavaPurchaseData(javaPurchaseData)`.  
         /// - Removes the consumed product from the inventory using `_inventory.RemovePurchase(purchaseData.ProductId)`.  
         /// - Invokes the `OnConsumeSucceeded` callback with the consumed purchase data.  
         /// </remarks>
         private void ProcessConsumePurchaseResult(AndroidJavaObject javaIapResult, AndroidJavaObject javaPurchaseData)
         {
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Error("Failed to finish the consume purchase with error code {0} and message: {1}",
+                Logger.Error("Failed to finish the consume purchase with error code {0} and message: {1}",
                     iapResult.Code, iapResult.Message);
 
                 HandleErrorCode(iapResult, () => {
@@ -813,7 +808,7 @@ namespace OneStore.Purchasing
                 return;
             }
 
-            var purchaseData = _iapHelper.ParseJavaPurchaseData(javaPurchaseData);
+            var purchaseData = IapHelper.ParseJavaPurchaseData(javaPurchaseData);
             _inventory.RemovePurchase(purchaseData.ProductId);
             RunOnMainThread(() => _callback.OnConsumeSucceeded(purchaseData));
         }
@@ -825,7 +820,7 @@ namespace OneStore.Purchasing
         /// <param name="productId">The product ID of the acknowledged purchase.</param>
         /// <param name="type">The type of product being acknowledged.</param>
         /// <remarks>
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the acknowledgment request fails, logs an error, handles the error code, and triggers the `OnAcknowledgeFailed` callback.  
         /// - If successful, calls `QueryPurchasesInternal()` to verify the purchase status.  
         /// - Runs the result on the main thread and invokes `OnAcknowledgeSucceeded` if the query is successful.  
@@ -833,10 +828,10 @@ namespace OneStore.Purchasing
         /// </remarks>
         private void ProcessAcknowledgePurchaseResult(AndroidJavaObject javaIapResult, string productId, ProductType type)
         {
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Error("Failed to finish the acknowledge purchase with error code {0} and message: {1}",
+                Logger.Error("Failed to finish the acknowledge purchase with error code {0} and message: {1}",
                     iapResult.Code, iapResult.Message);
              
                 HandleErrorCode(iapResult, () => {
@@ -866,17 +861,17 @@ namespace OneStore.Purchasing
         /// <param name="productId">The product ID of the recurring product being managed.</param>
         /// <param name="recurringAction">The recurring action performed (e.g., cancel, pause, resume).</param>
         /// <remarks>
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the request fails, logs an error, handles the error code, and triggers the `OnManageRecurringProduct` callback with a failure response.  
         /// - If successful, calls `QueryPurchasesInternal()` to verify the updated purchase status.  
         /// - Runs the result on the main thread and invokes `OnManageRecurringProduct` with the retrieved purchase data.  
         /// </remarks>
         private void ProcessRecurringProductResult(AndroidJavaObject javaIapResult, string productId, string recurringAction)
         {
-            var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+            var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
             if (!iapResult.IsSuccessful())
             {
-                _logger.Error("Failed to finish the manage recurring with error code {0} and message: {1}",
+                Logger.Error("Failed to finish the manage recurring with error code {0} and message: {1}",
                     iapResult.Code, iapResult.Message);
 
                 HandleErrorCode(iapResult, () => {
@@ -902,9 +897,9 @@ namespace OneStore.Purchasing
         ///   to refresh the product's state based on the latest purchase information.  
         /// - It executes `queryPurchasesAsync` internally to update the inventory with the latest state values.  
         /// - Creates a `QueryPurchasesListener` instance to listen for purchase query responses.  
-        /// - Parses the IAP result using `_iapHelper.ParseJavaIapResult(javaIapResult)`.  
+        /// - Parses the IAP result using `IapHelper.ParseJavaIapResult(javaIapResult)`.  
         /// - If the query fails, logs a warning, handles the error code, and invokes the callback with a failure response.  
-        /// - If the query succeeds, retrieves and parses the purchase list using `_iapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
+        /// - If the query succeeds, retrieves and parses the purchase list using `IapHelper.ParseJavaPurchasesList(javaPurchasesList)`.  
         /// - Updates `_inventory` with the retrieved purchases to maintain the latest product state.  
         /// - If a purchase matching `productId` exists in `_inventory`, invokes the callback with the corresponding `PurchaseData`.  
         /// - Calls `_purchaseClient.Call()` to execute the purchase query asynchronously for the specified product type.  
@@ -913,10 +908,10 @@ namespace OneStore.Purchasing
         {
             var queryPurchasesListener = new QueryPurchasesListener(type);
             queryPurchasesListener.OnPurchasesResponse += (_, javaIapResult, javaPurchasesList) => {
-                var iapResult = _iapHelper.ParseJavaIapResult(javaIapResult);
+                var iapResult = IapHelper.ParseJavaIapResult(javaIapResult);
                 if (!iapResult.IsSuccessful())
                 {
-                    _logger.Warning("QueryPurchasesInternal failed with error code '{0}' and message: '{1}'",
+                    Logger.Warning("QueryPurchasesInternal failed with error code '{0}' and message: '{1}'",
                         iapResult.Code, iapResult.Message);
                     
                     HandleErrorCode(iapResult, () => {
@@ -925,7 +920,7 @@ namespace OneStore.Purchasing
                     return;
                 }
 
-                var purchasesList = _iapHelper.ParseJavaPurchasesList(javaPurchasesList);
+                var purchasesList = IapHelper.ParseJavaPurchasesList(javaPurchasesList);
                 if (purchasesList.Any())
                 {
                     _inventory.UpdatePurchaseInventory(purchasesList);
@@ -950,7 +945,7 @@ namespace OneStore.Purchasing
         /// <param name="iapResult">The IAP result containing the error code.</param>
         /// <param name="action">An optional action to execute if the error code does not require a special response.</param>
         /// <remarks>
-        /// - Retrieves the response code from the IAP result using `_iapHelper.GetResponseCodeFromIapResult(iapResult)`.  
+        /// - Retrieves the response code from the IAP result using `IapHelper.GetResponseCodeFromIapResult(iapResult)`.  
         /// - If the response code is `RESULT_NEED_UPDATE`, triggers the `OnNeedUpdate` callback to prompt the user to update the ONE store service.  
         /// - If the response code is `RESULT_NEED_LOGIN`, triggers the `OnNeedLogin` callback to prompt the user to log in.  
         /// - If the response code is `ERROR_SERVICE_DISCONNECTED`, resets `_productInPurchaseFlow` and updates `_connectionStatus` to `DISCONNECTED`.  
@@ -958,7 +953,7 @@ namespace OneStore.Purchasing
         /// </remarks>
         private void HandleErrorCode(IapResult iapResult, Action action = null)
         {
-            var responseCode = _iapHelper.GetResponseCodeFromIapResult(iapResult);
+            var responseCode = IapHelper.GetResponseCodeFromIapResult(iapResult);
             switch (responseCode)
             {
                 case ResponseCode.RESULT_NEED_UPDATE:

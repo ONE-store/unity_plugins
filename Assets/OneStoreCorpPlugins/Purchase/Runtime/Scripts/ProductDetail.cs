@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using OneStore.Purchasing.Internal;
+using Logger = OneStore.Common.OneStoreLogger;
 
 namespace OneStore.Purchasing
 {
@@ -41,8 +42,10 @@ namespace OneStore.Purchasing
                 productDetail.JsonProductDetail = jsonProductDetail;
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error("[ProductDetail]: Failed to parse purchase data: {0}", jsonProductDetail);
+                Logger.Exception(ex);
                 productDetail = null;
                 return false;
             }

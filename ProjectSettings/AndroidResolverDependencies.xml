@@ -1,12 +1,12 @@
 <dependencies>
   <packages>
-    <package>com.onestorecorp.sdk:sdk-iap:21.02.00</package>
-    <package>com.onestorecorp.sdk:sdk-licensing:2.2.0</package>
+    <package>com.onestorecorp.sdk:sdk-iap:21.02.01</package>
+    <package>com.onestorecorp.sdk:sdk-licensing:2.2.1</package>
   </packages>
   <files />
   <settings>
-    <setting name="androidAbis" value="armeabi-v7a" />
-    <setting name="bundleId" value="com.onestore.inapp.sample" />
+    <setting name="androidAbis" value="arm64-v8a,armeabi-v7a" />
+    <setting name="bundleId" value="com.apptech.v19v21.update" />
     <setting name="explodeAars" value="True" />
     <setting name="gradleBuildEnabled" value="True" />
     <setting name="gradlePropertiesTemplateEnabled" value="True" />
