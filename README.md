@@ -85,7 +85,7 @@ Refer to the [ALC documentation](https://onestore-dev.gitbook.io/dev/eng/tools/a
 
 ## Change Note
 
-* 2025-12-10
+* 2025-12-16
     * Updated the Java SDK InApp Purchase to version 21.04.00.
     * Added the new dev_option `onestore_03`.
 * 2025-04-18
