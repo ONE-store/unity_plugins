@@ -4,7 +4,7 @@ namespace OneStore.Purchasing.Internal
 {
     internal static class Constants
     {
-        public const string Version = "21.02.01";
+        public const string Version = "21.04.00";
 
         public static readonly TimeSpan AsyncTimeout = TimeSpan.FromMilliseconds(30000);
 
